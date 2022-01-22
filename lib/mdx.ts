@@ -3,6 +3,12 @@ import path from 'path';
 import matter from 'gray-matter';
 import { serialize } from 'next-mdx-remote/serialize';
 
+interface PostMetadata {
+  title: string;
+  date: string;
+  slug: string;
+}
+
 const root = process.cwd();
 
 export function getFiles(): string[] {
@@ -28,7 +34,7 @@ export async function getFileBySlug(slug: string) {
   };
 }
 
-export function getAllFilesMetadata() {
+export function getAllFilesMetadata(): PostMetadata[] {
   const files = getFiles();
 
   //! figure out typing in the reduce's arguments

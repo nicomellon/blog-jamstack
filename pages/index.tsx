@@ -27,12 +27,8 @@ const Home: NextPage = ({ posts }) => {
 
         <div className={styles.grid}>
           {posts.map((post) => (
-            <Link
-              key={post.slug}
-              href={`/blog/${post.slug}`}
-              className={styles.card}
-            >
-              <a>
+            <Link key={post.slug} href={`/blog/${post.slug}`}>
+              <a className={styles.card}>
                 <h2>{post.title} &rarr;</h2>
                 <p>{post.date}</p>
               </a>
@@ -59,8 +55,6 @@ const Home: NextPage = ({ posts }) => {
 
 export async function getStaticProps() {
   const posts = await getAllFilesMetadata();
-  console.log(posts);
-
   return {
     props: { posts },
   };
