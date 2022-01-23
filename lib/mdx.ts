@@ -1,50 +1,59 @@
 import fs from 'fs';
+import { readdir, readFile } from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
 import { serialize } from 'next-mdx-remote/serialize';
+import { title } from 'process';
 
-interface PostMetadata {
+interface FileMetadata {
   title: string;
   date: string;
   slug: string;
 }
+const rootPath = process.cwd();
+const markdownPath = path.join(rootPath, 'markdown');
 
-const root = process.cwd();
-
-export function getFiles(): string[] {
-  return fs.readdirSync(path.join(root, 'markdown'));
+export async function getFiles() {
+  try {
+    const files = await readdir(markdownPath);
+    return files.map((file) => path.parse(path.join(markdownPath, file)));
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 export async function getFileBySlug(slug: string) {
-  const mdxSource = fs.readFileSync(
-    path.join(root, 'markdown', `${slug}.mdx`),
-    'utf-8'
-  );
-
-  const { data, content } = await matter(mdxSource);
-  const source = await serialize(content, {});
-  // TODO add a library that will allow formatting of code in .mdx - mdx-pris ?
-
-  return {
-    source,
-    frontMatter: {
-      slug,
-      ...data,
-    },
-  };
-}
-
-export function getAllFilesMetadata(): PostMetadata[] {
-  const files = getFiles();
-
-  //! figure out typing in the reduce's arguments
-  return files.reduce((allPosts: any, postSlug) => {
-    const mdxSource = fs.readFileSync(
-      path.join(root, 'markdown', postSlug),
+  try {
+    const mdxSource = await readFile(
+      path.join(markdownPath, `${slug}.mdx`),
       'utf-8'
     );
-    const { data } = matter(mdxSource);
+    const { data, content } = await matter(mdxSource);
+    const source = await serialize(content, {});
+    // TODO add a library that will allow formatting of code in .mdx - mdx-pris ?
 
-    return [{ ...data, slug: postSlug.replace('.mdx', '') }, ...allPosts];
-  }, []);
+    return {
+      source,
+      frontMatter: {
+        slug,
+        ...data,
+      },
+    };
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getAllFilesMetadata() {
+  try {
+    const files = await getFiles();
+    const filesMetadata: FileMetadata[] = files!.map((file) => {
+      const mdxSource = fs.readFileSync(path.format(file), 'utf-8');
+      const { data } = matter(mdxSource);
+      return { title: data.title, date: data.date, slug: file.name };
+    });
+    return filesMetadata;
+  } catch (err) {
+    console.error(err);
+  }
 }

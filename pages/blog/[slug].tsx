@@ -15,9 +15,10 @@ export async function getStaticProps({ params }) {
 
 export async function getStaticPaths() {
   const posts = await getFiles();
-  const paths = posts.map((post) => ({
+  console.log(posts);
+  const paths = posts!.map((post) => ({
     params: {
-      slug: post.replace('.mdx', ''),
+      slug: post.name,
     },
   }));
 

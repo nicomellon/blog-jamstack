@@ -54,10 +54,14 @@ const Home: NextPage = ({ posts }) => {
 };
 
 export async function getStaticProps() {
-  const posts = await getAllFilesMetadata();
-  return {
-    props: { posts },
-  };
+  try {
+    const posts = await getAllFilesMetadata();
+    return {
+      props: { posts },
+    };
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 export default Home;
