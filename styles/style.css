@@ -1,0 +1,33 @@
+body {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.flex {
+  display: flex;
+  gap: var(--gap, 1rem);
+}
+
+.w-100 {
+  width: 100vw;
+}
+
+/* Navbar */
+.logo {
+  margin: 1rem;
+}
+
+.primary-header {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.primary-navigation {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.primary-navigation a {
+  text-decoration: none;
+}
